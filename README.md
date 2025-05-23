@@ -37,5 +37,5 @@ Preloads adjacent station audio for smoother transitions.
 
 
 
-## Disclaimer
+#Disclaimer
 This project is a fan-made creation and is not affiliated with, endorsed by, or sponsored by Rockstar Games or Take-Two Interactive. The logos, music, and station names used in this demonstration are for illustrative purposes only and are inspired by the Grand Theft Auto series. I do not claim ownership of any copyrighted materials (logos, music files) referenced or used within this project. All rights for such materials belong to their respective owners. This project is intended for educational and personal use only.
