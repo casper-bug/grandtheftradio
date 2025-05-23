@@ -11,8 +11,8 @@
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #000000;
-            /* Black background */
+            /* Changed background to a subtle radial gradient for a sleek, modern feel */
+            background: radial-gradient(circle at center, #1a1a1a 0%, #0d0d0d 100%);
             color: #e2e8f0;
             /* Light text */
             display: flex;
@@ -22,21 +22,23 @@
             margin: 0;
             padding: 20px;
             box-sizing: border-box;
-            overflow: hidden;
-            /* Prevent body scroll if content slightly overflows */
+            /* Removed overflow: hidden; to allow scrolling */
         }
 
         .radio-container {
-            background-color: #333333;
-            /* Dark Grey background */
+            /* Changed background to a semi-transparent dark grey for an aero effect */
+            background-color: rgba(51, 51, 51, 0.6);
+            /* Added backdrop-filter for frosted glass effect */
+            backdrop-filter: blur(15px); /* Increased blur for more pronounced effect */
+            -webkit-backdrop-filter: blur(15px); /* Safari support */
             padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            border-radius: 20px; /* Slightly more rounded corners */
+            /* Enhanced box-shadow for a floating, modern look */
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.05); /* Added subtle white border for depth */
             max-width: 600px;
             width: 100%;
-            /* Ensures it takes full width on small screens */
             text-align: center;
-            border: 2px solid #4a5568;
+            border: none; /* Removed solid border, replaced by box-shadow's inner border */
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -44,7 +46,6 @@
             padding-left: 15px;
             padding-right: 15px;
             margin-top: 50px;
-            /* Added margin to push the container down */
         }
 
         .icon-carousel {
@@ -64,40 +65,27 @@
 
         .station-icon-base {
             /* Base styles for all icons */
-            /* Removed border-radius: 50%; to make icons square/rectangular */
             object-fit: contain;
-            /* Ensures the entire image fits within the container without cropping */
             transition: opacity 0.15s ease-in-out, transform 0.15s ease-in-out;
             flex-shrink: 0;
-            /* Prevent icons from shrinking below their content size */
         }
 
         .station-icon-outer-faded {
             /* Responsive width using clamp: min-size, preferred-size (vw), max-size */
             width: clamp(40px, 15vw, 80px);
-            /* Increased max size and preferred vw */
             height: clamp(40px, 15vw, 80px);
-            /* Increased max size and preferred vw */
-            /* Removed border: 1px solid #4a5568; */
             opacity: 0.15;
         }
 
         .station-icon-faded {
             width: clamp(60px, 20vw, 100px);
-            /* Increased max size and preferred vw */
             height: clamp(60px, 20vw, 100px);
-            /* Increased max size and preferred vw */
-            /* Removed border: 2px solid #4a5568; */
             opacity: 0.4;
         }
 
         .station-icon {
             width: clamp(80px, 30vw, 160px);
-            /* Increased max size and preferred vw */
             height: clamp(80px, 30vw, 160px);
-            /* Increased max size and preferred vw */
-            /* Removed border: 3px solid #4299e1; */
-            /* Removed box-shadow: 0 0 15px rgba(255, 255, 255, 0.6); */
             opacity: 1;
         }
 
@@ -108,46 +96,33 @@
         .station-name-display {
             /* Responsive font size using clamp */
             font-size: clamp(1.2rem, 5vw, 2.5rem);
-            /* Adjusted font size */
             font-weight: 800;
             color: #4299e1;
             margin-bottom: 20px;
             text-shadow: 0 0 10px rgba(66, 153, 225, 0.5);
-            /* Ensure text doesn't overflow */
             white-space: nowrap;
-            /* Prevent wrapping */
             overflow: hidden;
-            /* Hide overflow */
             text-overflow: ellipsis;
-            /* Add ellipsis for overflowed text */
             max-width: 100%;
-            /* Allow full width, let ellipsis handle overflow */
         }
 
         .radio-controls {
-            /* New class for the button container */
             display: flex;
-            /* Ensure flexbox is applied */
             align-items: center;
             justify-content: center;
             width: 100%;
             gap: 1rem;
-            /* Default gap */
         }
 
         @media (max-width: 640px) {
-            /* For small screens (Tailwind's sm breakpoint) */
             .radio-controls {
                 gap: 0.75rem;
-                /* Reduce gap to 12px */
             }
         }
 
         @media (max-width: 480px) {
-            /* For extra small screens */
             .radio-controls {
                 gap: 0.5rem;
-                /* Reduce gap further to 8px */
             }
         }
 
@@ -164,15 +139,10 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            /* Removed fixed width, now using flex properties */
             flex-grow: 1;
-            /* Allows button to grow to fill space */
             flex-shrink: 1;
-            /* Allows button to shrink */
             min-width: 48px;
-            /* Minimum width for smaller screens */
             max-width: 80px;
-            /* Maximum width to prevent them from becoming too large */
             height: 50px;
             padding: 0;
         }
@@ -188,26 +158,18 @@
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
         }
 
-        /* Specific styling for the play/pause button to be slightly larger */
         #play-pause-button {
-            /* Removed fixed width, now using flex properties */
             min-width: 60px;
-            /* Slightly larger minimum width */
             max-width: 100px;
-            /* Slightly larger maximum width */
         }
 
-        /* Hidden elements */
         .hidden {
             display: none !important;
         }
 
-        /* Toast styles */
         .toast-message {
             position: fixed;
-            /* Changed to fixed position relative to viewport */
             top: 150px;
-            /* Increased top value for more clearance */
             left: 50%;
             transform: translateX(-50%);
             background-color: rgba(0, 0, 0, 0.7);
@@ -286,7 +248,8 @@
     <script>
 
         const radioStations = [
-            { name: 'The Beat 102.7', src: 'https://youtu.be/7-XncPlc67s?si=r5w2c5XRmz2sNKyx', icon: 'icons/The_Beat-GTAIV.webp' },
+            // Changed the source for 'The Beat 102.7' to a valid MP3 URL
+            { name: 'The Beat 102.7', src: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3', icon: 'icons/The_Beat-GTAIV.webp' },
             { name: 'The Classics 104.1', src: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3', icon: 'icons/TheClassics.webp' },
             { name: 'Electro-Choc Fusion FM', src: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3', icon: 'icons/Electrochock.webp' },
             { name: 'International Funk', src: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3', icon: 'icons/IF99.webp' },
@@ -297,7 +260,8 @@
             { name: 'K109 The Studio', src: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3', icon: 'icons/K109.webp' },
             { name: 'Liberty City Hardcore', src: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3', icon: 'icons/Lchc.webp' },
             { name: 'Liberty Rock Radio', src: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3', icon: 'icons/Liberty_Rock_Radio.webp' },
-            { name: 'Massive B Soundsystem', src: 'Massive B Soundsystem 96.9 _ Full radio station.mp3', icon: 'icons/MassiveBSoundsystem.webp' },
+            // FIX: Changed local path to a valid public URL for 'Massive B Soundsystem'
+            { name: 'Massive B Soundsystem', src: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-7.mp3', icon: 'icons/MassiveBSoundsystem.webp' },
             { name: 'Public Liberty Radio', src: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3', icon: 'icons/Public_Liberty_Radio.webp' },
             { name: 'Radio Broker', src: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3', icon: 'icons/Radio_Broker.webp' },
             { name: 'RamJam FM', src: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3', icon: 'icons/RamJam_FM.webp' },
@@ -327,23 +291,42 @@
         const radioContainer = document.querySelector('.radio-container');
 
         let currentStationIndex = -1;
-        let loadingStationIndex = -1;
-        const audioCache = new Map(); // Stores Audio objects for efficient switching
+        // Removed activeAudioObject, it's redundant with 'audio' being the main player.
 
         let toastTimeout;
+        let audioLoadTimeout; // Debounce timeout for audio loading
+        // Increased debounce delay slightly to give more time for rapid scrolling/clicking
+        const audioLoadDelay = 300; // Debounce delay in milliseconds for audio loading
+
+        // Moved audioCache to global scope
+        const audioCache = new Map(); // Stores Audio objects for efficient switching
+
+
         /**
          * Displays a toast message at the top of the viewport.
          * @param {string} message - The message to display.
          * @param {number} duration - The duration in milliseconds for which the toast is visible.
+         * @param {boolean} sticky - If true, the toast will not auto-hide.
          */
-        function showToast(message, duration = 2000) {
+        function showToast(message, duration = 2000, sticky = false) {
             console.log("Showing toast:", message);
             clearTimeout(toastTimeout);
             toastMessageElement.textContent = message;
             toastMessageElement.classList.add('show');
-            toastTimeout = setTimeout(() => {
-                toastMessageElement.classList.remove('show');
-            }, duration);
+            if (!sticky) {
+                toastTimeout = setTimeout(() => {
+                    toastMessageElement.classList.remove('show');
+                }, duration);
+            }
+        }
+
+        /**
+         * Hides the currently displayed toast message.
+         */
+        function hideToast() {
+            clearTimeout(toastTimeout);
+            toastMessageElement.classList.remove('show');
+            toastMessageElement.textContent = ''; // Clear text content
         }
 
         /**
@@ -366,22 +349,21 @@
             newAudio.preload = 'auto'; // Suggest to preload
             audioCache.set(index, newAudio);
 
-            const current = currentStationIndex;
-            const effectiveCurrent = current !== -1 ? current : 0;
+            const currentVisualIndex = currentStationIndex; // Use the visually selected index
+            const indicesToKeep = new Set();
+            if (radioStations.length > 0) {
+                const effectiveCurrent = currentVisualIndex !== -1 ? currentVisualIndex : 0;
+                indicesToKeep.add(effectiveCurrent);
+                indicesToKeep.add((effectiveCurrent - 1 + radioStations.length) % radioStations.length);
+                indicesToKeep.add((effectiveCurrent + 1) % radioStations.length);
+                indicesToKeep.add((effectiveCurrent - 2 + radioStations.length) % radioStations.length);
+                indicesToKeep.add((effectiveCurrent + 2) % radioStations.length);
+            }
 
-            // Define the indices for the 5 visible carousel slots (current, 2 prev, 2 next)
-            // These are the only audio elements we actively keep in cache to save memory
-            const indicesToKeep = new Set([
-                effectiveCurrent,
-                (effectiveCurrent - 1 + radioStations.length) % radioStations.length,
-                (effectiveCurrent + 1) % radioStations.length,
-                (effectiveCurrent - 2 + radioStations.length) % radioStations.length,
-                (effectiveCurrent + 2) % radioStations.length
-            ]);
-
-            // Clean up old cache entries that are no longer neighbors
             audioCache.forEach((cachedAudio, key) => {
-                if (!indicesToKeep.has(key)) {
+                // Ensure we don't remove the currently playing audio object if it's different from the new target
+                // Now that `audio` is the single source of truth for playback, we check against `audio.src`
+                if (!indicesToKeep.has(key) && (audio.src !== cachedAudio.src)) {
                     cachedAudio.pause(); // Stop any playback if it was somehow playing
                     cachedAudio.src = ''; // Clear source to release resources
                     audioCache.delete(key);
@@ -393,12 +375,12 @@
 
         /**
          * Pre-loads audio for the adjacent stations (2 previous and 2 next) to enable smooth transitions.
+         * This loads into the cache, not directly to the main audio element.
          * @param {number} currentIndex - The index of the currently active station.
          */
         function preloadNeighbors(currentIndex) {
             if (radioStations.length < 1) return;
 
-            // Indices to preload: prev, next, prev-prev, next-next
             const indicesToPreload = [
                 (currentIndex - 1 + radioStations.length) % radioStations.length,
                 (currentIndex + 1) % radioStations.length,
@@ -408,7 +390,6 @@
 
             indicesToPreload.forEach(index => {
                 const audioToPreload = getOrCreateAudioElement(index);
-                // Only load if the audio element exists and hasn't already loaded enough data
                 if (audioToPreload && audioToPreload.readyState < 2) { // READY_STATE_HAVE_CURRENT_DATA
                     audioToPreload.load();
                 }
@@ -422,14 +403,14 @@
          */
         function updateIconCarousel(index) {
             if (radioStations.length === 0) {
-                // Display generic placeholders if no stations are defined
+                /* Display generic placeholders if no stations are defined */
                 currentStationIconDisplay.src = "https://placehold.co/120x120/4299e1/ffffff?text=Icon";
                 currentStationIconDisplay.alt = "Station Icon";
                 prevStationIconDisplay.src = "https://placehold.co/80x80/6B7280/FFFFFF?text=Prev";
                 nextStationIconDisplay.src = "https://placehold.co/80x80/6B7280/FFFFFF?text=Next";
                 prevPrevStationIconDisplay.src = "https://placehold.co/60x60/6B7280/FFFFFF?text=P-P";
                 nextNextStationIconDisplay.src = "https://placehold.co/60x60/6B7280/FFFFFF?text=N-N";
-                // Ensure opacities are set correctly for initial empty state
+                /* Ensure opacities are set correctly for initial empty state */
                 prevStationIconDisplay.style.opacity = '0.4';
                 nextStationIconDisplay.style.opacity = '0.4';
                 currentStationIconDisplay.style.opacity = '1';
@@ -438,19 +419,19 @@
                 return;
             }
 
-            // Helper to get circular index for any given offset
+            /* Helper to get circular index for any given offset */
             const getCircularIndex = (i) => (i + radioStations.length) % radioStations.length;
 
-            // Use 0 for initial display if no station is active yet, otherwise use current index
+            /* Use 0 for initial display if no station is active yet, otherwise use current index */
             let displayIndex = index === -1 ? 0 : index;
 
-            // Calculate indices for all 5 display slots
+            /* Calculate indices for all 5 display slots */
             let prevPrevIndex = getCircularIndex(displayIndex - 2);
             let prevIndex = getCircularIndex(displayIndex - 1);
             let nextIndex = getCircularIndex(displayIndex + 1);
             let nextNextIndex = getCircularIndex(displayIndex + 2);
 
-            // Set sources and alt text for all five icons
+            /* Set sources and alt text for all five icons */
             prevPrevStationIconDisplay.src = radioStations[prevPrevIndex].icon;
             prevPrevStationIconDisplay.alt = `${radioStations[prevPrevIndex].name} Icon`;
 
@@ -468,195 +449,194 @@
         }
 
         /**
-         * Loads and attempts to play a specific radio station.
-         * Handles loading states, error reporting, and UI updates.
-         * @param {number} index - The index of the station to play.
-         * @param {boolean} userInitiated - True if this play request was directly initiated by a user action (click, keypress).
+         * Loads a specific radio station's audio into the main audio element and prepares it.
+         * This function does NOT attempt to play it automatically.
+         * It updates the main 'audio' element's src.
+         * @param {number} index - The index of the station to load.
+         * @returns {Promise<boolean>} Resolves true if loaded successfully, false otherwise.
          */
-        async function playStation(index, userInitiated = false) {
-            // If this station is already the one being loaded/played, do nothing
-            if (loadingStationIndex === index && !audio.paused) { // Check if already playing or loading this specific station
-                return;
-            }
-
-            // Clear any previous loading state and audio playback
-            if (audio._currentLoadedMetadataHandler) {
-                audio.removeEventListener('loadedmetadata', audio._currentLoadedMetadataHandler);
-                audio._currentLoadedMetadataHandler = null; // Clear reference
-            }
-            if (audio._currentErrorHandler) {
-                audio.removeEventListener('error', audio._currentErrorHandler);
-                audio._currentErrorHandler = null; // Clear reference
-            }
-
-            // Validate index
+        async function loadStation(index) {
             if (index < 0 || index >= radioStations.length) {
-                console.error('Station index out of bounds:', index);
+                console.error('loadStation: Station index out of bounds:', index);
+                hideToast(); /* Hide any loading toast */
                 showToast(`Error: Invalid station selected.`, 3000);
-                currentStationNameDisplay.textContent = "Error";
-                return;
+                return false;
             }
 
             const station = radioStations[index];
-            if (!station) {
-                console.error('Station not found at index:', index);
-                showToast(`Error: Station data missing.`, 3000);
-                currentStationNameDisplay.textContent = "Error";
-                return;
+
+            /* If the main audio element's source is already this station and it's ready, do nothing. */
+            if (audio.src === station.src && audio.readyState >= audio.HAVE_METADATA) {
+                console.log(`Station ${station.name} already loaded into main player.`);
+                hideToast(); /* Hide any loading toast */
+                return true;
             }
 
-            // Set new loading state and disable buttons
-            loadingStationIndex = index;
+            /* Pause the currently playing audio */
+            audio.pause();
+            /* Clear its source to ensure a fresh load and abort any current download */
+            audio.src = '';
+            /* Calling load() after clearing src is essential to truly abort ongoing downloads */
+            audio.load();
+
+            /* Temporarily disable buttons while we prepare the audio */
             playPauseButton.disabled = true;
             prevButton.disabled = true;
             nextButton.disabled = true;
 
-            showToast(`Loading: ${station.name}...`);
-            currentStationNameDisplay.textContent = station.name;
-            updateIconCarousel(index);
             playIcon.classList.remove('hidden');
             pauseIcon.classList.add('hidden');
 
-            audio.src = station.src; // Set the new source
+            audio.src = station.src; /* Set the new source for the main audio element */
 
-            // Define event handlers for this specific loading attempt
-            const handleLoadedMetadata = async () => {
-                if (loadingStationIndex !== index) { // Ensure this callback is for the current operation
-                    console.log(`Ignoring stale onloadedmetadata for index ${index}. Current loading index is ${loadingStationIndex}.`);
-                    return;
-                }
+            try {
+                await new Promise((resolve, reject) => {
+                    const onLoadedMetadata = () => {
+                        audio.removeEventListener('loadedmetadata', onLoadedMetadata);
+                        audio.removeEventListener('error', onError);
+                        resolve();
+                    };
+                    const onError = (e) => { /* Capture the event object */
+                        audio.removeEventListener('loadedmetadata', onLoadedMetadata);
+                        audio.removeEventListener('error', onError);
+                        console.error('Audio loading error event:', e); /* Log the event for more details */
+                        reject(new Error(`Failed to load metadata for ${station.name}`));
+                    };
+                    audio.addEventListener('loadedmetadata', onLoadedMetadata);
+                    audio.addEventListener('error', onError);
+                    /* Re-call load() after setting src to ensure it starts loading */
+                    audio.load();
+                });
 
-                // Set current time to a random spot if duration is available
-                if (isFinite(audio.duration) && audio.duration > 0) {
+                /* Set random time for the main audio element if it's not already playing */
+                if (isFinite(audio.duration) && audio.duration > 0 && audio.paused) {
                     const randomTime = Math.random() * audio.duration;
                     audio.currentTime = randomTime;
-                    console.log(`Station ${station.name} loaded, set to random time: ${randomTime.toFixed(2)}s`);
-                } else {
-                    console.warn(`Could not set random time for ${station.name}: duration is not finite or zero.`);
+                    console.log(`Station ${station.name} prepared, set to random time: ${randomTime.toFixed(2)}s`);
                 }
 
-                if (userInitiated) { // Only attempt play if user initiated
-                    attemptPlay();
-                } else {
-                    // If not user-initiated (e.g., initial preload or neighbor preload), just enable buttons
-                    playPauseButton.disabled = false;
-                    prevButton.disabled = false;
-                    nextButton.disabled = false;
-                    loadingStationIndex = -1; // Clear loading state
-                    // Remove event listeners as they are no longer needed for this load cycle
-                    audio.removeEventListener('loadedmetadata', handleLoadedMetadata);
-                    audio.removeEventListener('error', handleError);
-                }
-            };
-
-            const handleError = () => {
-                if (loadingStationIndex !== index) { // Ensure this callback is for the current operation
-                    console.log(`Ignoring stale onerror for index ${index}. Current loading index is ${loadingStationIndex}.`);
-                    return;
-                }
-                console.error('Error loading audio for station:', station.name);
-                currentStationNameDisplay.textContent = `Failed to load station`;
-                showToast(`Error: Failed to load station.`, 3000);
+                /* Station is loaded, update currentStationIndex and enable buttons */
+                currentStationIndex = index; /* Confirm currentStationIndex is the one loaded */
                 playPauseButton.disabled = false;
                 prevButton.disabled = false;
                 nextButton.disabled = false;
-                loadingStationIndex = -1;
-                audio.removeEventListener('loadedmetadata', handleLoadedMetadata);
-                audio.removeEventListener('error', handleError);
-            };
+                hideToast(); /* Hide loading toast */
+                showToast(`Ready to play: ${radioStations[currentStationIndex].name}`, 1500);
+                preloadNeighbors(currentStationIndex); /* Preload neighbors for the newly prepared station */
+                return true;
 
-            audio._currentLoadedMetadataHandler = handleLoadedMetadata; // Store reference
-            audio._currentErrorHandler = handleError; // Store reference
-
-            audio.addEventListener('loadedmetadata', handleLoadedMetadata);
-            audio.addEventListener('error', handleError);
-
-            audio.load();
+            } catch (error) {
+                console.error('Error loading audio for station:', station.name, error);
+                hideToast(); /* Hide loading toast */
+                showToast(`Failed to load ${station.name}. Please press Play.`, 5000);
+                playPauseButton.disabled = false;
+                prevButton.disabled = false;
+                nextButton.disabled = false;
+                audio.src = ''; /* Clear source on error */
+                return false;
+            }
         }
 
+
         /**
-         * Attempts to play the audio. Handles potential autoplay policy blocks.
+         * Attempts to play the current audio. Handles potential autoplay policy blocks.
          */
         async function attemptPlay() {
+            if (currentStationIndex === -1 || audio.src === '') {
+                hideToast(); /* Hide any loading toast */
+                showToast("No station selected or loaded. Please select a station and press Play.", 3000);
+                return;
+            }
+
+            /* This check should ideally be redundant if loadStation was awaited correctly
+             * but keeping it as a safeguard. */
+            if (audio.readyState < audio.HAVE_METADATA) {
+                console.warn("Attempted to play audio before metadata loaded. This should not happen if loadStation was awaited.");
+                hideToast(); /* Hide any stale toast */
+                showToast(`Audio not fully ready for ${radioStations[currentStationIndex].name}. Please try again.`, 3000);
+                playPauseButton.disabled = false;
+                prevButton.disabled = false;
+                nextButton.disabled = false;
+                return;
+            }
+
+            playPauseButton.disabled = true; /* Disable button during play attempt */
             try {
-                await audio.play(); // Attempt to play first
+                await audio.play(); /* Attempt to play the main audio element */
 
                 playIcon.classList.add('hidden');
                 pauseIcon.classList.remove('hidden');
-                currentStationIndex = loadingStationIndex; // Set current index only upon successful play
-                loadingStationIndex = -1; // Clear loading state
-
+                hideToast(); /* Hide loading toast */
                 showToast(`Now Playing: ${radioStations[currentStationIndex].name}`, 2000);
-                preloadNeighbors(currentStationIndex); // Preload neighbors for the newly playing station
             } catch (error) {
-                console.error('Error attempting to play audio (autoplay blocked?):', radioStations[loadingStationIndex].name, error);
+                console.error('Error attempting to play audio (autoplay blocked?):', radioStations[currentStationIndex].name, error);
+                hideToast(); /* Hide loading toast */
                 if (error.name === "NotAllowedError" || error.name === "NotSupportedError") {
-                    currentStationNameDisplay.textContent = `Click Play to start!`;
                     showToast(`Autoplay blocked. Please click the Play button.`, 5000);
-                } else {
-                    currentStationNameDisplay.textContent = `Failed to play station`;
-                    showToast(`Error: Could not play station.`, 3000);
+                } else if (error.name === "AbortError" && error.message.includes("interrupted by a call to pause()")) {
+                    /* This error means a play was initiated but then immediately paused.
+                     * This should be rare with the improved interrupt logic. */
+                    console.warn("Play request was interrupted by a pause. This might be due to rapid user interaction.");
+                    showToast(`Playback interrupted. Please press Play again.`, 3000);
+                }
+                else {
+                    showToast(`Failed to play ${radioStations[currentStationIndex].name}. Please press Play.`, 3000);
                 }
                 playIcon.classList.remove('hidden');
                 pauseIcon.classList.add('hidden');
-                // Do NOT update currentStationIndex if play failed, keep previous or -1
-                loadingStationIndex = -1; // Clear loading state
+                audio.pause(); /* Ensure main audio is paused on error */
             } finally {
-                playPauseButton.disabled = false; // Re-enable button
-                prevButton.disabled = false;
-                nextButton.disabled = false;
-                // Remove the specific handlers once the attempt is complete
-                if (audio._currentLoadedMetadataHandler) {
-                    audio.removeEventListener('loadedmetadata', audio._currentLoadedMetadataHandler);
-                    audio._currentLoadedMetadataHandler = null;
-                }
-                if (audio._currentErrorHandler) {
-                    audio.removeEventListener('error', audio._currentErrorHandler);
-                    audio._currentErrorHandler = null;
-                }
+                playPauseButton.disabled = false; /* Re-enable button */
             }
         }
 
         /**
          * Toggles the play/pause state of the current audio.
-         * If no station is active, it attempts to play the first one.
+         * This is the ONLY function that should initiate audio loading and playback.
          */
         async function togglePlayPause() {
             if (audio.paused) {
-                // If no station has been selected yet, play the first one (user initiated)
+                let targetIndexToLoad = currentStationIndex;
+
+                /* If no station is visually selected, default to the first one. */
                 if (currentStationIndex === -1 && radioStations.length > 0) {
-                    await playStation(0, true); // User initiated
-                } else if (currentStationIndex !== -1) {
-                    // If a station is selected but paused, try to play/resume it (user initiated)
-                    playPauseButton.disabled = true; // Disable button during play attempt
-                    try {
-                        // Set current time to a random spot if duration is available before playing
-                        if (isFinite(audio.duration) && audio.duration > 0) {
-                            const randomTime = Math.random() * audio.duration;
-                            audio.currentTime = randomTime;
-                            console.log(`Resuming from random time: ${randomTime.toFixed(2)}s`);
-                        }
-                        await audio.play();
-                        playIcon.classList.add('hidden');
-                        pauseIcon.classList.remove('hidden');
-                        showToast(`Resumed: ${radioStations[currentStationIndex].name}`, 2000);
-                    } catch (error) {
-                        console.error('Error resuming playback (autoplay blocked?):', radioStations[currentStationIndex].name, error);
-                        if (error.name === "NotAllowedError" || error.name === "NotSupportedError") {
-                            currentStationNameDisplay.textContent = `Click Play to start!`;
-                            showToast(`Autoplay blocked. Please click the Play button.`, 5000);
-                        } else {
-                            currentStationNameDisplay.textContent = `Failed to resume playback`;
-                            showToast(`Error: Could not resume playback.`, 3000);
-                        }
-                        playIcon.classList.remove('hidden');
-                        pauseIcon.classList.add('hidden');
-                    } finally {
-                        playPauseButton.disabled = false; // Re-enable button
+                    targetIndexToLoad = 0;
+                    /* Update visuals immediately for the default station */
+                    currentStationNameDisplay.textContent = radioStations[targetIndexToLoad].name;
+                    updateIconCarousel(targetIndexToLoad);
+                    currentStationIndex = targetIndexToLoad; /* Update currentStationIndex */
+                }
+
+                /* If the current station's audio is not loaded into the main audio element, load it.
+                 * Check audio.src directly against the target station's src. */
+                const needsLoading = (targetIndexToLoad !== -1 && audio.src !== radioStations[targetIndexToLoad].src) || (targetIndexToLoad !== -1 && audio.readyState < audio.HAVE_METADATA);
+
+                if (needsLoading) {
+                    showToast(`Loading: ${radioStations[targetIndexToLoad].name}...`, 2000, true); /* Sticky loading toast */
+                    const loadSuccess = await loadStation(targetIndexToLoad);
+                    if (!loadSuccess) {
+                        /* loadStation already handled error toast and button re-enabling */
+                        return; /* Exit if loading failed */
                     }
                 }
+
+                /* After ensuring the correct station is loaded (or loading), attempt to play. */
+                if (currentStationIndex !== -1 && audio.readyState >= audio.HAVE_METADATA) { /* Only attempt play if metadata is available */
+                    await attemptPlay();
+                } else if (currentStationIndex !== -1) {
+                     /* If we reach here, it means loadStation might have failed or is still pending.
+                      * The error toast from loadStation should cover this. */
+                     console.log("Audio not ready to play after load attempt (should be covered by loadStation error).");
+                     hideToast(); /* Ensure toast is hidden */
+                     showToast(`Failed to play ${radioStations[currentStationIndex].name}. Please press Play.`, 3000);
+                     playPauseButton.disabled = false;
+                     prevButton.disabled = false;
+                     nextButton.disabled = false;
+                }
+
+
             } else {
-                // If audio is playing, pause it
+                /* If audio is playing, pause it */
                 audio.pause();
                 playIcon.classList.remove('hidden');
                 pauseIcon.classList.add('hidden');
@@ -666,152 +646,191 @@
             }
         }
 
-        // --- Event Listeners ---
+        /**
+         * Debounced function to handle station switching.
+         * Updates UI immediately. Does NOT trigger audio loading.
+         * @param {number} index - The index of the station to switch to.
+         */
+        function debouncedSwitchStation(index) {
+            if (radioStations.length === 0) {
+                showToast("No stations available!", 2000);
+                return;
+            }
+
+            /* --- Interrupt current audio operation --- */
+            /* If audio is currently loading or playing, stop it immediately.
+             * Check if audio.src is set (meaning a load was initiated) or if it's currently playing. */
+            if (!audio.paused || (audio.src !== '' && audio.readyState < audio.HAVE_METADATA)) {
+                console.log("Interrupting current audio operation (playing or loading).");
+                audio.pause(); /* Pause if playing */
+                audio.src = ''; /* Clear source to abort current download */
+                audio.load();   /* Call load() to ensure the abort takes effect */
+                hideToast();    /* Hide any ongoing loading/playing toast */
+                /* Re-enable buttons if they were disabled by a previous load/play attempt */
+                playPauseButton.disabled = false;
+                prevButton.disabled = false;
+                nextButton.disabled = false;
+            }
+            /* --- End Interrupt --- */
+
+
+            /* Immediately update UI for responsiveness */
+            currentStationIndex = index; /* Update the current station index visually */
+            currentStationNameDisplay.textContent = radioStations[index].name;
+            updateIconCarousel(index);
+
+            /* Ensure play icon is visible, as audio is not automatically playing on switch */
+            playIcon.classList.remove('hidden');
+            pauseIcon.classList.add('hidden');
+
+            /* Show appropriate toast message based on whether audio was playing */
+            if (!audio.paused) { /* This check is redundant due to the interrupt block above, but harmless. */
+                showToast(`Switched to: ${radioStations[currentStationIndex].name}. Press Play to listen.`, 2000);
+            } else {
+                showToast(`Selected: ${radioStations[currentStationIndex].name}. Press Play to listen.`, 2000);
+            }
+
+            /* Clear any existing timeout for audio loading, as we don't want to load on every visual switch */
+            clearTimeout(audioLoadTimeout);
+
+            /* Schedule the audio loading after a short delay.
+             * This prepares the audio for playback when the user eventually presses play,
+             * but doesn't auto-play it. */
+            audioLoadTimeout = setTimeout(() => {
+                /* Only load if the audio source is not already set to this station's source on the main audio element
+                 * This will trigger loadStation if needed when play is pressed. */
+                const targetStationSrc = radioStations[index].src;
+                if (audio.src !== targetStationSrc) {
+                    /* Preload into cache for faster access later, but don't set main audio.src yet */
+                    const cachedAudio = getOrCreateAudioElement(index);
+                    if (cachedAudio && cachedAudio.readyState < cachedAudio.HAVE_METADATA) {
+                        cachedAudio.load();
+                    }
+                }
+            }, audioLoadDelay);
+        }
+
+        /* --- Event Listeners --- */
         playPauseButton.addEventListener('click', togglePlayPause);
 
         prevButton.addEventListener('click', () => {
+            let targetIndex;
             if (radioStations.length === 0) {
                 showToast("No stations available!", 2000);
                 return;
             }
-            let targetIndex;
             if (currentStationIndex === -1) {
-                targetIndex = radioStations.length - 1; // Go to last station if none active
+                targetIndex = radioStations.length - 1; /* Go to last station if none active */
             } else {
                 targetIndex = (currentStationIndex - 1 + radioStations.length) % radioStations.length;
             }
-            playStation(targetIndex, true); // User initiated
+            debouncedSwitchStation(targetIndex);
         });
 
         nextButton.addEventListener('click', () => {
+            let targetIndex;
             if (radioStations.length === 0) {
                 showToast("No stations available!", 2000);
                 return;
             }
-            let targetIndex;
             if (currentStationIndex === -1) {
-                targetIndex = 0; // Go to first station if none active
+                targetIndex = 0; /* Go to first station if none active */
             } else {
                 targetIndex = (currentStationIndex + 1) % radioStations.length;
             }
-            playStation(targetIndex, true); // User initiated
+            debouncedSwitchStation(targetIndex);
         });
 
-        // Keyboard navigation for 'Q' key
+        /* Keyboard navigation for 'Q' key */
         document.addEventListener('keydown', (event) => {
             if (event.key === 'q' || event.key === 'Q') {
-                event.preventDefault(); // Prevent default browser behavior (e.g., quick find)
+                event.preventDefault(); /* Prevent default browser behavior (e.g., quick find) */
                 if (radioStations.length === 0) {
                     showToast("No stations available to cycle!", 2000);
                     return;
                 }
-
                 let nextIndex;
                 if (currentStationIndex === -1) {
                     nextIndex = 0;
                 } else {
                     nextIndex = (currentStationIndex + 1) % radioStations.length;
                 }
-                playStation(nextIndex, true); // User initiated
+                debouncedSwitchStation(nextIndex);
             }
         });
 
-        // Mouse wheel navigation over the radio container
+        /* Mouse wheel navigation over the radio container */
         radioContainer.addEventListener('wheel', (event) => {
-            event.preventDefault(); // Prevent page scrolling
+            /* Do NOT preventDefault here to allow page scrolling */
+            /* event.preventDefault(); */
             if (radioStations.length === 0) {
                 showToast("No stations available to cycle!", 2000);
                 return;
             }
-
             let targetIndex;
-            if (event.deltaY > 0) { // Scroll down (next station)
+            if (event.deltaY > 0) { /* Scroll down (next station) */
                 if (currentStationIndex === -1) {
                     targetIndex = 0;
                 } else {
                     targetIndex = (currentStationIndex + 1) % radioStations.length;
                 }
-            } else { // Scroll up (previous station)
+            } else { /* Scroll up (previous station) */
                 if (currentStationIndex === -1) {
                     targetIndex = radioStations.length - 1;
                 } else {
                     targetIndex = (currentStationIndex - 1 + radioStations.length) % radioStations.length;
                 }
             }
-            playStation(targetIndex, true); // User initiated
+            debouncedSwitchStation(targetIndex);
         });
 
-        // Handle audio ending (DO NOT AUTO-REPLAY)
+        /* Handle audio ending (DO NOT AUTO-REPLAY) */
         audio.addEventListener('ended', () => {
             playIcon.classList.remove('hidden');
             pauseIcon.classList.add('hidden');
-            currentStationNameDisplay.textContent = "Press Play"; // Prompt user to play again
+            currentStationNameDisplay.textContent = "Press Play"; /* Prompt user to play again */
+            hideToast(); /* Hide any toast */
             showToast(`Station ended. Press Play to restart.`, 3000);
-            // Optionally, you could automatically go to the next station here if desired,
-            // but for autoplay policy compliance, it's safer to wait for user interaction.
-            // If you want to auto-advance, call playStation((currentStationIndex + 1) % radioStations.length, false);
         });
 
-        // Update UI when audio is paused
+        /* Update UI when audio is paused */
         audio.addEventListener('pause', () => {
             playIcon.classList.remove('hidden');
             pauseIcon.classList.add('hidden');
         });
 
-        // Update UI when audio starts playing
+        /* Update UI when audio starts playing */
         audio.addEventListener('play', () => {
             playIcon.classList.add('hidden');
             pauseIcon.classList.remove('hidden');
+            hideToast(); /* Hide any loading toast when playback starts */
         });
 
-        // --- Initialization on Page Load ---
+        /* --- Initialization on Page Load --- */
         window.onload = () => {
             if (radioStations.length > 0) {
-                // Set the current station index to the first station for initial display
+                /* Set the current station index to the first station for initial display */
                 currentStationIndex = 0;
-                // Update the carousel to show the first station's icons and its neighbors
+                /* Update the carousel to show the first station's icons and its neighbors */
                 updateIconCarousel(currentStationIndex);
-                // Set the initial display text
-                currentStationNameDisplay.textContent = "Press Play"; // Initial prompt
+                /* Set the initial display text */
+                currentStationNameDisplay.textContent = "Press Play"; /* Initial prompt */
 
-                // Proactively set the main audio element's source to the first station's audio
-                audio.src = radioStations[0].src;
-
-                // Add a one-time listener to set random time when metadata is loaded for the first station
-                const setInitialRandomTime = () => {
-                    if (isFinite(audio.duration) && audio.duration > 0) {
-                        const randomTime = Math.random() * audio.duration;
-                        audio.currentTime = randomTime;
-                        console.log(`Initial station loaded, set to random time: ${randomTime.toFixed(2)}s`);
-                    }
-                    audio.removeEventListener('loadedmetadata', setInitialRandomTime); // Remove listener after first use
-                };
-
-                // Check if metadata is already loaded (e.g., from cache)
-                if (audio.readyState >= audio.HAVE_METADATA) {
-                    setInitialRandomTime(); // If ready, set immediately
-                } else {
-                    audio.addEventListener('loadedmetadata', setInitialRandomTime); // Otherwise, wait for event
-                }
-
-                // Explicitly tell the browser to start loading/buffering.
-                // This does NOT attempt to play the audio automatically, only loads it.
-                audio.load();
-
-                // Proactively preload audio for adjacent stations (already handled by preloadNeighbors)
+                /* Proactively preload audio for adjacent stations (already handled by preloadNeighbors)
+                 * This prepares them in the background without setting the main audio.src */
                 preloadNeighbors(currentStationIndex);
 
-                // Preload ALL station icons by creating Image objects
-                // This ensures all icons are fetched by the browser as soon as possible
+                /* Preload ALL station icons by creating Image objects
+                 * This ensures all icons are fetched by the browser as soon as possible */
                 radioStations.forEach(station => {
                     const img = new Image();
                     img.src = station.icon;
-                    // You can add img.onload or img.onerror here if you need to track icon loading status
+                    /* You can add img.onload or img.onerror here if you need to track icon loading status */
                 });
 
             } else {
                 currentStationNameDisplay.textContent = "No stations available!";
-                updateIconCarousel(-1); // Show generic placeholders if no stations are defined
+                updateIconCarousel(-1); /* Show generic placeholders if no stations are defined */
             }
         };
     </script>
