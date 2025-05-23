@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GTA IV Radio</title>
+    <title>GTA-Style Radio Player</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
@@ -33,10 +33,11 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            position: relative; /* For toast positioning */
+            /* position: relative; Removed as toast is now fixed to viewport */
             /* Add some padding-x for smaller screens if needed, or let default padding handle it */
             padding-left: 15px;
             padding-right: 15px;
+            margin-top: 50px; /* Added margin to push the container down */
         }
         .icon-carousel {
             display: flex;
@@ -93,6 +94,19 @@
             text-overflow: ellipsis; /* Add ellipsis for overflowed text */
             max-width: 100%; /* Allow full width, let ellipsis handle overflow */
         }
+        .radio-controls { /* New class for the button container */
+            gap: 1rem; /* Default gap */
+        }
+        @media (max-width: 640px) { /* For small screens (Tailwind's sm breakpoint) */
+            .radio-controls {
+                gap: 0.75rem; /* Reduce gap to 12px */
+            }
+        }
+        @media (max-width: 480px) { /* For extra small screens */
+            .radio-controls {
+                gap: 0.5rem; /* Reduce gap further to 8px */
+            }
+        }
         .control-button {
             background-color: #4a5568;
             color: #e2e8f0;
@@ -130,8 +144,8 @@
 
         /* Toast styles */
         .toast-message {
-            position: absolute;
-            top: 20px;
+            position: fixed; /* Changed to fixed position relative to viewport */
+            top: 150px; /* Increased top value for more clearance */
             left: 50%;
             transform: translateX(-50%);
             background-color: rgba(0, 0, 0, 0.7);
@@ -157,7 +171,7 @@
 </head>
 <body class="antialiased">
     <div class="radio-container">
-        <h1 class="text-3xl font-bold mb-6 text-blue-400">GTA IV Radio</h1>
+        <h1 class="text-3xl font-bold mb-6 text-blue-400">GTA Radio</h1>
 
         <div class="icon-carousel">
             <img id="prev-prev-station-icon" src="" alt="Previous Previous Station Icon" class="station-icon-outer-faded station-icon-base">
@@ -174,7 +188,7 @@
 
         <audio id="radio-audio" class="w-full mb-6 hidden" controls></audio>
 
-        <div class="flex items-center justify-center gap-4 w-full">
+        <div class="flex items-center justify-center w-full radio-controls">
             <button id="prev-button" class="control-button">
                 <svg class="prev-icon" viewBox="0 0 24 24">
                     <path d="M15.41 16.59L10.83 12l4.58-4.59L14 6l-6 6 6 6z"/>
@@ -218,7 +232,7 @@
          * Change the 'name', 'src', or 'icon' properties of an existing object.
          *
          * 3.  Remove a station:
-         * Delete the entire object for that station from the array.
+         * Delete the entire object from the array.
          *
          * Each station object MUST have:
          * - 'name': A string for the display name of the radio station (e.g., 'The Beat 102.7').
@@ -280,7 +294,7 @@
 
         let toastTimeout;
         /**
-         * Displays a toast message at the top of the container.
+         * Displays a toast message at the top of the viewport.
          * @param {string} message - The message to display.
          * @param {number} duration - The duration in milliseconds for which the toast is visible.
          */
@@ -422,30 +436,30 @@
          * @param {boolean} userInitiated - True if this play request was directly initiated by a user action (click, keypress).
          */
         async function playStation(index, userInitiated = false) {
-            // Prevent re-playing the same station if it's already active and not paused, or if it's already loading
-            if ((index === currentStationIndex && !audio.paused && loadingStationIndex === -1) || loadingStationIndex === index) {
+            // If this station is already the one being loaded/played, do nothing
+            if (loadingStationIndex === index && !audio.paused) { // Check if already playing or loading this specific station
                 return;
             }
 
-            // If a different station is currently loading, interrupt it
-            if (loadingStationIndex !== -1 && loadingStationIndex !== index) {
-                audio.pause();
-                audio.src = ''; // Clear source to interrupt network request
-                audio.load();   // Force reload to clear internal state
-                // Remove any old event listeners attached directly to 'audio' to prevent stale callbacks
-                if (audio._currentLoadedMetadataHandler) {
-                    audio.removeEventListener('loadedmetadata', audio._currentLoadedMetadataHandler);
-                }
-                if (audio._currentErrorHandler) {
-                    audio.removeEventListener('error', audio._currentErrorHandler);
-                }
+            // Clear any previous loading state and audio playback
+            if (audio._currentLoadedMetadataHandler) {
+                audio.removeEventListener('loadedmetadata', audio._currentLoadedMetadataHandler);
+                audio._currentLoadedMetadataHandler = null; // Clear reference
             }
+            if (audio._currentErrorHandler) {
+                audio.removeEventListener('error', audio._currentErrorHandler);
+                audio._currentErrorHandler = null; // Clear reference
+            }
+
+            audio.pause(); // Always pause current audio if switching or restarting
+            audio.src = ''; // Clear source to stop current loading/playback and release resources
+            audio.load();   // Force reload to clear internal state of the audio element
 
             // Validate index
             if (index < 0 || index >= radioStations.length) {
                 console.error('Station index out of bounds:', index);
                 showToast(`Error: Invalid station selected.`, 3000);
-                currentStationNameDisplay.textContent = "Error"; // Generic error for display
+                currentStationNameDisplay.textContent = "Error";
                 return;
             }
 
@@ -453,155 +467,63 @@
             if (!station) {
                 console.error('Station not found at index:', index);
                 showToast(`Error: Station data missing.`, 3000);
-                currentStationNameDisplay.textContent = "Error"; // Generic error for display
+                currentStationNameDisplay.textContent = "Error";
                 return;
             }
 
-            // Set loading state and disable buttons
+            // Set new loading state and disable buttons
             loadingStationIndex = index;
             playPauseButton.disabled = true;
             prevButton.disabled = true;
             nextButton.disabled = true;
 
-            // Immediately update UI for loading feedback
             showToast(`Loading: ${station.name}...`);
-            currentStationNameDisplay.textContent = station.name; // Show new station name immediately
+            currentStationNameDisplay.textContent = station.name;
             updateIconCarousel(index);
-            playIcon.classList.remove('hidden'); // Show play icon during loading
+            playIcon.classList.remove('hidden');
             pauseIcon.classList.add('hidden');
 
-            // Only change audio.src and call audio.load() if the source is actually different
-            const isNewSource = audio.src !== station.src;
+            audio.src = station.src; // Set the new source
 
-            if (isNewSource) {
-                audio.src = station.src;
-                // Remove previous handlers to prevent multiple calls for old sources
-                if (audio._currentLoadedMetadataHandler) {
-                    audio.removeEventListener('loadedmetadata', audio._currentLoadedMetadataHandler);
-                }
-                if (audio._currentErrorHandler) {
-                    audio.removeEventListener('error', audio._currentErrorHandler);
-                }
-            }
-
-
-            /**
-             * Attempts to play the audio if it's ready.
-             * This function is called by loadedmetadata or immediately if already ready.
-             * It also checks if the play attempt is still relevant to the current loadingStationIndex.
-             */
-            const attemptPlay = async () => {
-                // Crucial check: Only proceed if this play attempt belongs to the *currently desired* loading station
-                if (loadingStationIndex !== index) {
-                    console.log(`Ignoring stale play attempt for index ${index}. Current loading index is ${loadingStationIndex}.`);
+            // Define event handlers for this specific loading attempt
+            const handleLoadedMetadata = async () => {
+                if (loadingStationIndex !== index) { // Ensure this callback is for the current operation
+                    console.log(`Ignoring stale onloadedmetadata for index ${index}. Current loading index is ${loadingStationIndex}.`);
                     return;
                 }
-
-                try {
-                    // Check if audio has enough data to play (HAVE_CURRENT_DATA or more)
-                    if (audio.readyState < audio.HAVE_CURRENT_DATA) {
-                        console.log(`Audio not ready for playback, waiting for more data for ${station.name}. Current readyState: ${audio.readyState}`);
-                        // If not ready, the loadedmetadata event will trigger this again when it is.
-                        return;
-                    }
-
-                    const duration = audio.duration;
-                    if (isNaN(duration) || !isFinite(duration) || duration === 0) {
-                        console.error('Invalid audio duration for station:', station.name);
-                        currentStationNameDisplay.textContent = `Failed to play station`;
-                        showToast(`Error: Invalid audio duration.`, 3000);
-                        return;
-                    }
-
-                    // Only set random time if it's a new play or re-play from start
-                    if (userInitiated || audio.currentTime === 0) {
-                        const randomTime = Math.random() * duration;
-                        audio.currentTime = randomTime;
-                    }
-
-
-                    await audio.play().catch(error => {
-                        console.error('Error playing station (autoplay blocked?):', station.name, error);
-                        if (error.name === "NotAllowedError" || error.name === "NotSupportedError") {
-                            currentStationNameDisplay.textContent = `Click Play to start!`;
-                            showToast(`Autoplay blocked. Please click the Play button.`, 5000);
-                        } else {
-                            currentStationNameDisplay.textContent = `Failed to play station`;
-                            showToast(`Error: Could not play station.`, 3000);
-                        }
-                        playIcon.classList.remove('hidden');
-                        pauseIcon.classList.add('hidden');
-                        playPauseButton.disabled = false;
-                        prevButton.disabled = false;
-                        nextButton.disabled = false;
-                        // Do NOT re-throw error here, as it's handled by the catch block.
-                        // Throwing it again would lead to an unhandled promise rejection.
-                    });
-
-                    // Only proceed if play() was successful (no error thrown by the catch block)
-                    if (!audio.paused) { // Check if audio is actually playing after the attempt
-                        currentStationNameDisplay.textContent = station.name;
-                        playIcon.classList.add('hidden');
-                        pauseIcon.classList.remove('hidden');
-                        currentStationIndex = index;
-                        showToast(`Now Playing: ${station.name}`, 2000);
-
-                        preloadNeighbors(currentStationIndex);
-                    }
-
-                } catch (error) {
-                    console.error('Unhandled error during play attempt:', error);
-                } finally {
-                    // Re-enable buttons and reset loading state regardless of outcome
-                    playPauseButton.disabled = false;
-                    prevButton.disabled = false;
-                    nextButton.disabled = false;
-                    loadingStationIndex = -1; // Reset loading state
-                    // Remove the specific listeners for this attempt to prevent memory leaks/stale calls
-                    audio.removeEventListener('loadedmetadata', audio._currentLoadedMetadataHandler);
-                    audio.removeEventListener('error', audio._currentErrorHandler);
-                }
-            };
-
-            const handleLoadedMetadata = () => {
-                // Ensure this metadata event is for the currently intended loading station
-                if (loadingStationIndex === index) {
-                    attemptPlay(); // Try to play once metadata is loaded
-                }
+                attemptPlay();
             };
 
             const handleError = () => {
-                // Ensure this error event is for the currently intended loading station
-                if (loadingStationIndex === index) {
-                    console.error('Error loading audio for station:', station.name);
-                    currentStationNameDisplay.textContent = `Failed to load station`;
-                    showToast(`Error: Failed to load station.`, 3000);
-                    playPauseButton.disabled = false;
-                    prevButton.disabled = false;
-                    nextButton.disabled = false;
-                    loadingStationIndex = -1;
-                    audio.removeEventListener('loadedmetadata', audio._currentLoadedMetadataHandler);
-                    audio.removeEventListener('error', audio._currentErrorHandler);
+                if (loadingStationIndex !== index) { // Ensure this callback is for the current operation
+                    console.log(`Ignoring stale onerror for index ${index}. Current loading index is ${loadingStationIndex}.`);
+                    return;
                 }
+                console.error('Error loading audio for station:', station.name);
+                currentStationNameDisplay.textContent = `Failed to load station`;
+                showToast(`Error: Failed to load station.`, 3000);
+                playPauseButton.disabled = false;
+                prevButton.disabled = false;
+                nextButton.disabled = false;
+                loadingStationIndex = -1;
+                audio.removeEventListener('loadedmetadata', handleLoadedMetadata);
+                audio.removeEventListener('error', handleError);
             };
 
-            // Store the current handlers so we can remove them later
-            audio._currentLoadedMetadataHandler = handleLoadedMetadata;
-            audio._currentErrorHandler = handleError;
+            audio._currentLoadedMetadataHandler = handleLoadedMetadata; // Store reference
+            audio._currentErrorHandler = handleError; // Store reference
 
             audio.addEventListener('loadedmetadata', handleLoadedMetadata);
             audio.addEventListener('error', handleError);
 
+            // Start loading the new audio
+            audio.load();
+
             // If audio is already loaded enough (e.g., from initial preload), try to play immediately.
-            // Otherwise, audio.load() will trigger loadedmetadata, which then calls attemptPlay.
+            // This is important for responsiveness if the audio is already cached.
             if (userInitiated && audio.readyState >= audio.HAVE_CURRENT_DATA) {
-                // If user initiated and audio is ready, attempt to play directly
                 attemptPlay();
-            } else if (isNewSource) {
-                // If it's a new source, always call load to ensure it starts fetching data
-                audio.load();
             }
-            // If not userInitiated and not a new source, we just wait for user interaction or other events.
         }
 
         /**
@@ -615,25 +537,27 @@
                     await playStation(0, true); // User initiated
                 } else if (currentStationIndex !== -1) {
                     // If a station is selected but paused, try to play/resume it (user initiated)
-                    // We directly call audio.play() here as it's a direct user interaction.
-                    await audio.play().catch(error => {
+                    // Directly call audio.play() as it's a direct user interaction on the *current* station.
+                    // No need to go through playStation if it's just a resume of the current audio.
+                    playPauseButton.disabled = true; // Disable button during play attempt
+                    try {
+                        await audio.play();
+                        playIcon.classList.add('hidden');
+                        pauseIcon.classList.remove('hidden');
+                        showToast(`Resumed: ${radioStations[currentStationIndex].name}`, 2000);
+                    } catch (error) {
                         console.error('Error resuming playback (autoplay blocked?):', radioStations[currentStationIndex].name, error);
                         if (error.name === "NotAllowedError" || error.name === "NotSupportedError") {
                             currentStationNameDisplay.textContent = `Click Play to start!`;
                             showToast(`Autoplay blocked. Please click the Play button.`, 5000);
                         } else {
-                            currentStationNameDisplay.textContent = `Failed to play station`;
+                            currentStationNameDisplay.textContent = `Failed to resume playback`;
                             showToast(`Error: Could not resume playback.`, 3000);
                         }
                         playIcon.classList.remove('hidden');
                         pauseIcon.classList.add('hidden');
-                        // Do NOT re-throw here. The catch block handles the error.
-                    });
-                    // Only update UI if play() was successful
-                    if (!audio.paused) {
-                        playIcon.classList.add('hidden');
-                        pauseIcon.classList.remove('hidden');
-                        showToast(`Resumed: ${radioStations[currentStationIndex].name}`, 2000);
+                    } finally {
+                        playPauseButton.disabled = false; // Re-enable button
                     }
                 }
             } else {
