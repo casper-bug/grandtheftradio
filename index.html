@@ -65,30 +65,30 @@
             /* Base styles for all icons */
             border-radius: 50%;
             object-fit: contain;
-            /* Changed from 'cover' to 'contain' to prevent cropping */
+            /* Ensures the entire image fits within the circle without cropping */
             transition: opacity 0.15s ease-in-out, transform 0.15s ease-in-out;
             flex-shrink: 0;
             /* Prevent icons from shrinking below their content size */
         }
 
         .station-icon-outer-faded {
-            /* Responsive width using clamp: min-size, preferred-size, max-size */
-            width: clamp(40px, 10vw, 60px);
-            height: clamp(40px, 10vw, 60px);
+            /* Responsive width using clamp: min-size, preferred-size (vw), max-size */
+            width: clamp(40px, 12vw, 70px); /* Increased max size */
+            height: clamp(40px, 12vw, 70px); /* Increased max size */
             border: 1px solid #4a5568;
             opacity: 0.15;
         }
 
         .station-icon-faded {
-            width: clamp(60px, 15vw, 80px);
-            height: clamp(60px, 15vw, 80px);
+            width: clamp(60px, 18vw, 90px); /* Increased max size */
+            height: clamp(60px, 18vw, 90px); /* Increased max size */
             border: 2px solid #4a5568;
             opacity: 0.4;
         }
 
         .station-icon {
-            width: clamp(80px, 20vw, 120px);
-            height: clamp(80px, 20vw, 120px);
+            width: clamp(80px, 25vw, 140px); /* Increased max size */
+            height: clamp(80px, 25vw, 140px); /* Increased max size */
             border: 3px solid #4299e1;
             box-shadow: 0 0 15px rgba(255, 255, 255, 0.6);
             /* White glow */
@@ -271,7 +271,39 @@
     </div>
 
     <script>
-      
+        /*
+         * =====================================================================
+         * RADIO STATION CONFIGURATION
+         * =====================================================================
+         *
+         * This is the dedicated section for defining all your radio stations.
+         *
+         * Each station is an object within this 'radioStations' array.
+         *
+         * To add, remove, or modify stations:
+         *
+         * 1.  Add a new station:
+         * Simply add a new object to the array, following the structure below.
+         *
+         * 2.  Modify an existing station:
+         * Change the 'name', 'src', or 'icon' properties of an existing object.
+         *
+         * 3.  Remove a station:
+         * Delete the entire object from the array.
+         *
+         * Each station object MUST have:
+         * - 'name': A string for the display name of the radio station (e.g., 'The Beat 102.7').
+         * - 'src': A string for the URL to the MP3 audio file for the station.
+         * IMPORTANT: Replace placeholder URLs with actual paths to your MP3 files.
+         * Ensure these URLs are publicly accessible.
+         * Example: 'https://yourwebsite.com/audio/my-radio-station.mp3'
+         * - 'icon': A string for the URL to the station's logo or icon image.
+         * Replace placeholder URLs with links to your own image files.
+         * For best visual results, use square images.
+         * Example: 'https://yourwebsite.com/images/my-station-logo.png'
+         *
+         * =====================================================================
+         */
         const radioStations = [
             { name: 'The Beat 102.7', src: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3', icon: 'icons/The_Beat-GTAIV.webp' },
             { name: 'The Classics 104.1', src: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3', icon: 'icons/TheClassics.webp' },
