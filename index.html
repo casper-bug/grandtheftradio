@@ -63,9 +63,9 @@
 
         .station-icon-base {
             /* Base styles for all icons */
-            border-radius: 50%;
+            /* Removed border-radius: 50%; to make icons square/rectangular */
             object-fit: contain;
-            /* Ensures the entire image fits within the circle without cropping */
+            /* Ensures the entire image fits within the container without cropping */
             transition: opacity 0.15s ease-in-out, transform 0.15s ease-in-out;
             flex-shrink: 0;
             /* Prevent icons from shrinking below their content size */
@@ -77,7 +77,7 @@
             /* Increased max size and preferred vw */
             height: clamp(40px, 15vw, 80px);
             /* Increased max size and preferred vw */
-            border: 1px solid #4a5568;
+            /* Removed border: 1px solid #4a5568; */
             opacity: 0.15;
         }
 
@@ -86,7 +86,7 @@
             /* Increased max size and preferred vw */
             height: clamp(60px, 20vw, 100px);
             /* Increased max size and preferred vw */
-            border: 2px solid #4a5568;
+            /* Removed border: 2px solid #4a5568; */
             opacity: 0.4;
         }
 
@@ -95,9 +95,8 @@
             /* Increased max size and preferred vw */
             height: clamp(80px, 30vw, 160px);
             /* Increased max size and preferred vw */
-            border: 3px solid #4299e1;
-            box-shadow: 0 0 15px rgba(255, 255, 255, 0.6);
-            /* White glow */
+            /* Removed border: 3px solid #4299e1; */
+            /* Removed box-shadow: 0 0 15px rgba(255, 255, 255, 0.6); */
             opacity: 1;
         }
 
@@ -487,12 +486,6 @@
             if (audio._currentErrorHandler) {
                 audio.removeEventListener('error', audio._currentErrorHandler);
                 audio._currentErrorHandler = null; // Clear reference
-            }
-
-            // Pause current audio if playing, before setting new source
-            // This is the only place we explicitly pause, to avoid interrupting a new play()
-            if (!audio.paused) {
-                audio.pause();
             }
 
             // Validate index
