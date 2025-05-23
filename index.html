@@ -73,22 +73,28 @@
 
         .station-icon-outer-faded {
             /* Responsive width using clamp: min-size, preferred-size (vw), max-size */
-            width: clamp(40px, 12vw, 70px); /* Increased max size */
-            height: clamp(40px, 12vw, 70px); /* Increased max size */
+            width: clamp(40px, 15vw, 80px);
+            /* Increased max size and preferred vw */
+            height: clamp(40px, 15vw, 80px);
+            /* Increased max size and preferred vw */
             border: 1px solid #4a5568;
             opacity: 0.15;
         }
 
         .station-icon-faded {
-            width: clamp(60px, 18vw, 90px); /* Increased max size */
-            height: clamp(60px, 18vw, 90px); /* Increased max size */
+            width: clamp(60px, 20vw, 100px);
+            /* Increased max size and preferred vw */
+            height: clamp(60px, 20vw, 100px);
+            /* Increased max size and preferred vw */
             border: 2px solid #4a5568;
             opacity: 0.4;
         }
 
         .station-icon {
-            width: clamp(80px, 25vw, 140px); /* Increased max size */
-            height: clamp(80px, 25vw, 140px); /* Increased max size */
+            width: clamp(80px, 30vw, 160px);
+            /* Increased max size and preferred vw */
+            height: clamp(80px, 30vw, 160px);
+            /* Increased max size and preferred vw */
             border: 3px solid #4299e1;
             box-shadow: 0 0 15px rgba(255, 255, 255, 0.6);
             /* White glow */
@@ -120,7 +126,8 @@
 
         .radio-controls {
             /* New class for the button container */
-            display: flex; /* Ensure flexbox is applied */
+            display: flex;
+            /* Ensure flexbox is applied */
             align-items: center;
             justify-content: center;
             width: 100%;
@@ -158,10 +165,14 @@
             align-items: center;
             justify-content: center;
             /* Removed fixed width, now using flex properties */
-            flex-grow: 1; /* Allows button to grow to fill space */
-            flex-shrink: 1; /* Allows button to shrink */
-            min-width: 48px; /* Minimum width for smaller screens */
-            max-width: 80px; /* Maximum width to prevent them from becoming too large */
+            flex-grow: 1;
+            /* Allows button to grow to fill space */
+            flex-shrink: 1;
+            /* Allows button to shrink */
+            min-width: 48px;
+            /* Minimum width for smaller screens */
+            max-width: 80px;
+            /* Maximum width to prevent them from becoming too large */
             height: 50px;
             padding: 0;
         }
@@ -180,8 +191,10 @@
         /* Specific styling for the play/pause button to be slightly larger */
         #play-pause-button {
             /* Removed fixed width, now using flex properties */
-            min-width: 60px; /* Slightly larger minimum width */
-            max-width: 100px; /* Slightly larger maximum width */
+            min-width: 60px;
+            /* Slightly larger minimum width */
+            max-width: 100px;
+            /* Slightly larger maximum width */
         }
 
         /* Hidden elements */
@@ -271,39 +284,7 @@
     </div>
 
     <script>
-        /*
-         * =====================================================================
-         * RADIO STATION CONFIGURATION
-         * =====================================================================
-         *
-         * This is the dedicated section for defining all your radio stations.
-         *
-         * Each station is an object within this 'radioStations' array.
-         *
-         * To add, remove, or modify stations:
-         *
-         * 1.  Add a new station:
-         * Simply add a new object to the array, following the structure below.
-         *
-         * 2.  Modify an existing station:
-         * Change the 'name', 'src', or 'icon' properties of an existing object.
-         *
-         * 3.  Remove a station:
-         * Delete the entire object from the array.
-         *
-         * Each station object MUST have:
-         * - 'name': A string for the display name of the radio station (e.g., 'The Beat 102.7').
-         * - 'src': A string for the URL to the MP3 audio file for the station.
-         * IMPORTANT: Replace placeholder URLs with actual paths to your MP3 files.
-         * Ensure these URLs are publicly accessible.
-         * Example: 'https://yourwebsite.com/audio/my-radio-station.mp3'
-         * - 'icon': A string for the URL to the station's logo or icon image.
-         * Replace placeholder URLs with links to your own image files.
-         * For best visual results, use square images.
-         * Example: 'https://yourwebsite.com/images/my-station-logo.png'
-         *
-         * =====================================================================
-         */
+
         const radioStations = [
             { name: 'The Beat 102.7', src: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3', icon: 'icons/The_Beat-GTAIV.webp' },
             { name: 'The Classics 104.1', src: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3', icon: 'icons/TheClassics.webp' },
@@ -509,10 +490,10 @@
             }
 
             // Pause current audio if playing, before setting new source
+            // This is the only place we explicitly pause, to avoid interrupting a new play()
             if (!audio.paused) {
                 audio.pause();
             }
-            // No need to clear src and load() here, setting new src will handle it.
 
             // Validate index
             if (index < 0 || index >= radioStations.length) {
@@ -550,7 +531,28 @@
                     console.log(`Ignoring stale onloadedmetadata for index ${index}. Current loading index is ${loadingStationIndex}.`);
                     return;
                 }
-                attemptPlay();
+
+                // Set current time to a random spot if duration is available
+                if (isFinite(audio.duration) && audio.duration > 0) {
+                    const randomTime = Math.random() * audio.duration;
+                    audio.currentTime = randomTime;
+                    console.log(`Station ${station.name} loaded, set to random time: ${randomTime.toFixed(2)}s`);
+                } else {
+                    console.warn(`Could not set random time for ${station.name}: duration is not finite or zero.`);
+                }
+
+                if (userInitiated) { // Only attempt play if user initiated
+                    attemptPlay();
+                } else {
+                    // If not user-initiated (e.g., initial preload or neighbor preload), just enable buttons
+                    playPauseButton.disabled = false;
+                    prevButton.disabled = false;
+                    nextButton.disabled = false;
+                    loadingStationIndex = -1; // Clear loading state
+                    // Remove event listeners as they are no longer needed for this load cycle
+                    audio.removeEventListener('loadedmetadata', handleLoadedMetadata);
+                    audio.removeEventListener('error', handleError);
+                }
             };
 
             const handleError = () => {
@@ -575,14 +577,7 @@
             audio.addEventListener('loadedmetadata', handleLoadedMetadata);
             audio.addEventListener('error', handleError);
 
-            // Start loading the new audio
             audio.load();
-
-            // If audio is already loaded enough (e.g., from initial preload), try to play immediately.
-            // This is important for responsiveness if the audio is already cached.
-            if (userInitiated && audio.readyState >= audio.HAVE_CURRENT_DATA) {
-                attemptPlay();
-            }
         }
 
         /**
@@ -590,11 +585,13 @@
          */
         async function attemptPlay() {
             try {
-                await audio.play();
+                await audio.play(); // Attempt to play first
+
                 playIcon.classList.add('hidden');
                 pauseIcon.classList.remove('hidden');
                 currentStationIndex = loadingStationIndex; // Set current index only upon successful play
                 loadingStationIndex = -1; // Clear loading state
+
                 showToast(`Now Playing: ${radioStations[currentStationIndex].name}`, 2000);
                 preloadNeighbors(currentStationIndex); // Preload neighbors for the newly playing station
             } catch (error) {
@@ -637,10 +634,14 @@
                     await playStation(0, true); // User initiated
                 } else if (currentStationIndex !== -1) {
                     // If a station is selected but paused, try to play/resume it (user initiated)
-                    // Directly call audio.play() as it's a direct user interaction on the *current* station.
-                    // No need to go through playStation if it's just a resume of the current audio.
                     playPauseButton.disabled = true; // Disable button during play attempt
                     try {
+                        // Set current time to a random spot if duration is available before playing
+                        if (isFinite(audio.duration) && audio.duration > 0) {
+                            const randomTime = Math.random() * audio.duration;
+                            audio.currentTime = randomTime;
+                            console.log(`Resuming from random time: ${randomTime.toFixed(2)}s`);
+                        }
                         await audio.play();
                         playIcon.classList.add('hidden');
                         pauseIcon.classList.remove('hidden');
@@ -780,9 +781,27 @@
                 currentStationNameDisplay.textContent = "Press Play"; // Initial prompt
 
                 // Proactively set the main audio element's source to the first station's audio
-                // and explicitly tell the browser to start loading/buffering.
-                // This does NOT attempt to play the audio automatically, only loads it.
                 audio.src = radioStations[0].src;
+
+                // Add a one-time listener to set random time when metadata is loaded for the first station
+                const setInitialRandomTime = () => {
+                    if (isFinite(audio.duration) && audio.duration > 0) {
+                        const randomTime = Math.random() * audio.duration;
+                        audio.currentTime = randomTime;
+                        console.log(`Initial station loaded, set to random time: ${randomTime.toFixed(2)}s`);
+                    }
+                    audio.removeEventListener('loadedmetadata', setInitialRandomTime); // Remove listener after first use
+                };
+
+                // Check if metadata is already loaded (e.g., from cache)
+                if (audio.readyState >= audio.HAVE_METADATA) {
+                    setInitialRandomTime(); // If ready, set immediately
+                } else {
+                    audio.addEventListener('loadedmetadata', setInitialRandomTime); // Otherwise, wait for event
+                }
+
+                // Explicitly tell the browser to start loading/buffering.
+                // This does NOT attempt to play the audio automatically, only loads it.
                 audio.load();
 
                 // Proactively preload audio for adjacent stations (already handled by preloadNeighbors)
