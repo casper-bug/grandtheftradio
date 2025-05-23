@@ -709,10 +709,13 @@
                 // Set the initial display text
                 currentStationNameDisplay.textContent = "Press Play"; // Initial prompt
 
-                // Proactively preload the first station's audio and its neighbors
-                // This prepares the audio for a faster start when the user presses play
-                getOrCreateAudioElement(0); // Load the first station's audio into cache
-                preloadNeighbors(currentStationIndex); // Preload audio for adjacent stations
+                // Set the main audio element's source to the first station's audio
+                audio.src = radioStations[0].src;
+                // Start loading the audio file immediately in the background
+                audio.load();
+
+                // Proactively preload audio for adjacent stations (already handled by preloadNeighbors)
+                preloadNeighbors(currentStationIndex);
 
                 // Preload ALL station icons by creating Image objects
                 // This ensures all icons are fetched by the browser as soon as possible
